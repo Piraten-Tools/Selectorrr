@@ -6,6 +6,7 @@
  *
  * Authors of STUdS (initial project): Guilhem BORGHESI (borghesi@unistra.fr) and Raphaël DROZ
  * Authors of Framadate/OpenSondage: Framasoft (https://github.com/framasoft)
+ * Authors of Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  *
  * =============================
  *
@@ -15,6 +16,7 @@
  *
  * Auteurs de STUdS (projet initial) : Guilhem BORGHESI (borghesi@unistra.fr) et Raphaël DROZ
  * Auteurs de Framadate/OpenSondage : Framasoft (https://github.com/framasoft)
+ * Auteurs de Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  */
 use Framadate\Utils;
 
@@ -48,7 +50,7 @@ function bandeau_titre($titre)
     $tables = $connect->allTables();
     $diff = array_diff([Utils::table('comment'), Utils::table('poll'), Utils::table('slot'), Utils::table('vote')], $tables);
     if (0 !== count($diff)) {
-        echo '<div class="alert alert-danger">' . __('Error', 'Framadate is not properly installed, please check the "INSTALL" to setup the database before continuing.') . '</div>';
+        echo '<div class="alert alert-danger">' . __('Error', 'Selectorrr is not properly installed, please check the "INSTALL" to setup the database before continuing.') . '</div>';
         bandeau_pied();
         die();
     }

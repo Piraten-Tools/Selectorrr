@@ -6,6 +6,7 @@
  *
  * Authors of STUdS (initial project): Guilhem BORGHESI (borghesi@unistra.fr) and Raphaël DROZ
  * Authors of Framadate/OpenSondage: Framasoft (https://github.com/framasoft)
+ * Authors of Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  *
  * =============================
  *
@@ -15,11 +16,12 @@
  *
  * Auteurs de STUdS (projet initial) : Guilhem BORGHESI (borghesi@unistra.fr) et Raphaël DROZ
  * Auteurs de Framadate/OpenSondage : Framasoft (https://github.com/framasoft)
+ * Auteurs de Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  */
 
 // Fully qualified domain name of your webserver.
 // If this is unset or empty, the servername is determined automatically.
-// You *have to set this* if you are running Framadate behind a reverse proxy.
+// You *have to set this* if you are running Selectorrr behind a reverse proxy.
 // const APP_URL = '<www.mydomain.fr>';
 
 // Application name

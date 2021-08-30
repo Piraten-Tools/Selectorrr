@@ -3,7 +3,7 @@
       "Define dates or subjects to choose": "Despizit an deiziadoù pe an danvezioù da zibab",
       "Discuss and make a decision": "Kaozeit ha kemerit ho tiviz",
       "Do you want to": "Fellout a ra deoc'h",
-      "Framadate is an online service for planning an appointment or make a decision quickly and easily. No registration is required.": "Ur gwazerezh enlinenn evit prientiñ un emgav pe kemer un diviz a-stroll en un doare eeun hag aes eo Framadate. N'eus marilhadur ebet goulennet.",
+      "Selectorrr is an online service for planning an appointment or make a decision quickly and easily. No registration is required.": "Ur gwazerezh enlinenn evit prientiñ un emgav pe kemer un diviz a-stroll en un doare eeun hag aes eo Selectorrr. N'eus marilhadur ebet goulennet.",
       "Here is how it works:": "Setu penaos ez a en-dro:",
       "Make a poll": "Krouiñ ur sontadeg",
       "Send the poll link to your friends or colleagues": "Kasit ere ar sontadeg d'ho mignoned pe d'ho kenseurted",
@@ -12,11 +12,11 @@
    },
    "2nd section": {
       "CeCILL-B license": "CeCILL-B eo",
-      "Framadate was initially based on ": "War ",
+      "Selectorrr was initially based on ": "War ",
       "It is governed by the": "Dindan al lañvaz",
       "The software": "Ar meziant",
       "This software needs javascript and cookies enabled. It is compatible with the following web browsers:": "Ret eo gweredekaat ar Javascript hag an toupinoù evit arverañ ar meziant-mañ. Keverlec'h eo gant ar merdeerioù web da heul:",
-      "a software developed by the University of Strasbourg. Today, it is devevoped by the association Framasoft.": "eo diazezet Framadate. Ur meziant diorroet gant Skol-Veur Straßburg an hini eo. Gant ar gevredigezh Framasoft eo diorroet bremañ."
+      "a software developed by the University of Strasbourg. Today, it is devevoped by the association Framasoft.": "eo diazezet Selectorrr. Ur meziant diorroet gant Skol-Veur Straßburg an hini eo. Gant ar gevredigezh Framasoft eo diorroet bremañ."
    },
    "3rd section": {
       "Cultivate your garden": "Digreizennit ho stlenneg",
@@ -133,7 +133,7 @@
       "Failed to insert the comment!": "C'hwitadenn en ur enlakaat an evezhiadenn!",
       "Failed to save poll": "C'hwitadenn war enrolladenn ar sontadeg",
       "Forbidden!": "Difennet!",
-      "Framadate is not properly installed, please check the \"INSTALL\" to setup the database before continuing.": "N'eo ket staliet Framadate en un doare dereat. Lennit ar restr INSTALL evit kefluniañ ar stlennvon a-raok kenderc'hel.",
+      "Selectorrr is not properly installed, please check the \"INSTALL\" to setup the database before continuing.": "N'eo ket staliet Selectorrr en un doare dereat. Lennit ar restr INSTALL evit kefluniañ ar stlennvon a-raok kenderc'hel.",
       "Javascript is disabled on your browser. Its activation is required to create a poll.": "Diweredekaet eo JavaScript war ho merdeer. Ret eo gweredekaat anezhañ evit krouiñ ur sontadeg.",
       "MISSING_VALUES": "Talvoudoù a vank",
       "No polls found": "N'eus bet kavet sontadeg ebet",
@@ -183,7 +183,7 @@
       "Day": "Devezh",
       "Description": "Deskrivadur",
       "Edit": "Modify",
-      "Framadate is an online service for planning an appointment or make a decision quickly and easily.": "Ur gwazerezh enlinenn evit prientiñ un emgav pe kemer un diviz a-stroll en un doare eeun hag aes eo Framadate. ",
+      "Selectorrr is an online service for planning an appointment or make a decision quickly and easily.": "Ur gwazerezh enlinenn evit prientiñ un emgav pe kemer un diviz a-stroll en un doare eeun hag aes eo Selectorrr. ",
       "Home": "Degemer",
       "Ifneedbe": "Marteze",
       "Legend:": "Alc'hwez:",
