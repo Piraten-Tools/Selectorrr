@@ -1,13 +1,13 @@
-# Framadate
+# Selectorrr
 
-![English](https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Flag_of_the_United_Kingdom.svg/20px-Flag_of_the_United_Kingdom.svg.png) Framadate is an online service for planning an appointment or making a decision quickly and easily. No registration is required.
+![English](https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Flag_of_the_United_Kingdom.svg/20px-Flag_of_the_United_Kingdom.svg.png) Selectorrr is an online service for planning an appointment or making a decision quickly and easily. No registration is required.
 
-![Français](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/20px-Flag_of_France.svg.png) Framadate est un service en ligne permettant de planifier un rendez-vous ou prendre des décisions rapidement et simplement. Aucune inscription préalable n’est nécessaire.
+![Français](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/20px-Flag_of_France.svg.png) Selectorrr est un service en ligne permettant de planifier un rendez-vous ou prendre des décisions rapidement et simplement. Aucune inscription préalable n’est nécessaire.
 
 ---
 # Installation
 
-Follow the instructions on our Wiki : <https://framagit.org/framasoft/framadate/wikis/home>
+Follow the instructions on Framadate Wiki : <https://framagit.org/framasoft/framadate/wikis/home>
 
 # Contribute
 
@@ -27,6 +27,7 @@ Follow the instructions on <https://framagit.org/framasoft/framadate/wikis/trans
 
 ---
 
+Selectorrr is a fork of [Framadate](https://framagit.org/framasoft/framadate/), that does allow polls without mail
 Framadate is a fork of the [STUdS](https://sourcesup.cru.fr/projects/studs/) project, that works at framadate.org for framasoft.org
 
 Previous main authors of Framadate were :

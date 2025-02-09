@@ -5,6 +5,7 @@
  *
  * Authors of STUdS (initial project): Guilhem BORGHESI (borghesi@unistra.fr) and Raphaël DROZ
  * Authors of Framadate/OpenSondage: Framasoft (https://github.com/framasoft)
+ * Authors of Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  *
  * =============================
  *
@@ -14,6 +15,7 @@
  *
  * Auteurs de STUdS (projet initial) : Guilhem BORGHESI (borghesi@unistra.fr) et Raphaël DROZ
  * Auteurs de Framadate/OpenSondage : Framasoft (https://github.com/framasoft)
+ * Auteurs de Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  */
 (function () {
 

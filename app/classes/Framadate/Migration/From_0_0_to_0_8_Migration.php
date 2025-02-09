@@ -6,6 +6,7 @@
  *
  * Authors of STUdS (initial project): Guilhem BORGHESI (borghesi@unistra.fr) and Raphaël DROZ
  * Authors of Framadate/OpenSondage: Framasoft (https://github.com/framasoft)
+ * Authors of Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  *
  * =============================
  *
@@ -15,6 +16,7 @@
  *
  * Auteurs de STUdS (projet initial) : Guilhem BORGHESI (borghesi@unistra.fr) et Raphaël DROZ
  * Auteurs de Framadate/OpenSondage : Framasoft (https://github.com/framasoft)
+ * Auteurs de Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  */
 namespace Framadate\Migration;
 
@@ -36,7 +38,7 @@ class From_0_0_to_0_8_Migration implements Migration {
      * @return string The description of the migration class
      */
     function description() {
-        return 'First installation of the Framadate application (v0.8)';
+        return 'First installation of the Selectorrr application (v0.8)';
     }
 
     /**

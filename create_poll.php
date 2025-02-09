@@ -6,6 +6,7 @@
  *
  * Authors of STUdS (initial project): Guilhem BORGHESI (borghesi@unistra.fr) and Rapha�l DROZ
  * Authors of Framadate/OpenSondage: Framasoft (https://github.com/framasoft)
+ * Authors of Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  *
  * =============================
  *
@@ -15,6 +16,7 @@
  *
  * Auteurs de STUdS (projet initial) : Guilhem BORGHESI (borghesi@unistra.fr) et Rapha�l DROZ
  * Auteurs de Framadate/OpenSondage : Framasoft (https://github.com/framasoft)
+ * Auteurs de Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  */
 
 use Framadate\Form;
@@ -100,7 +102,7 @@ if ($goToStep2) {
     $form->use_password = ($use_password !== null);
     $form->results_publicly_visible = ($results_publicly_visible !== null);
 
-    if ($config['use_smtp'] === true && empty($mail)) {
+    if ($config['use_smtp'] === true && $config['smtp_optional'] !== true && empty($mail)) {
         $error_on_mail = true;
     }
 
@@ -134,9 +136,14 @@ if ($goToStep2) {
 
     // Si pas d'erreur dans l'adresse alors on change de page vers date ou autre
     if ($config['use_smtp'] === true) {
-        $email_OK = $mail && !$error_on_mail;
+        $email_OK = !$error_on_mail;
     } else {
         $email_OK = true;
+    }
+
+    if ($email_OK && empty($mail)) {
+        $receiveNewVotes = false;
+        $receiveNewComments = false;
     }
 
     if ($use_password) {
@@ -289,6 +296,7 @@ $smarty->assign('useRemoteUser', $useRemoteUser);
 $smarty->assign('errors', $errors);
 $smarty->assign('advanced_errors', $goToStep2 && ($error_on_ValueMax || $error_on_customized_url || $error_on_password || $error_on_password_repeat));
 $smarty->assign('use_smtp', $config['use_smtp']);
+$smarty->assign('smtp_optional', $config['smtp_optional']);
 $smarty->assign('default_to_marldown_editor', $config['markdown_editor_by_default']);
 $smarty->assign('goToStep2', GO_TO_STEP_2);
 

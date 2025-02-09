@@ -6,6 +6,7 @@
  *
  * Authors of STUdS (initial project): Guilhem BORGHESI (borghesi@unistra.fr) and Raphaël DROZ
  * Authors of Framadate/OpenSondage: Framasoft (https://github.com/framasoft)
+ * Authors of Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  *
  * =============================
  *
@@ -15,6 +16,7 @@
  *
  * Auteurs de STUdS (projet initial) : Guilhem BORGHESI (borghesi@unistra.fr) et Raphaël DROZ
  * Auteurs de Framadate/OpenSondage : Framasoft (https://github.com/framasoft)
+ * Auteurs de Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  */
 use Framadate\Choice;
 use Framadate\Services\LogService;
@@ -43,7 +45,7 @@ if (is_file('bandeaux_local.php')) {
 $form = unserialize($_SESSION['form']);
 
 // Step 1/4 : error if $_SESSION from info_sondage are not valid
-if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']) ? empty($form->admin_mail) : false)) {
+if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$config['smtp_optional']) ? empty($form->admin_mail) : false)) {
     $smarty->assign('title', __('Error', 'Error!'));
     $smarty->assign('error', __('Error', 'You haven\'t filled the first section of the poll creation.'));
     $smarty->display('error.tpl');

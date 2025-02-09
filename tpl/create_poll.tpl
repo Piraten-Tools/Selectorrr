@@ -43,7 +43,7 @@
                 {if $use_smtp}
                 <div class="form-group {$errors['email']['class']}">
                     <label for="email" class="col-sm-4 control-label">
-                        {__('Generic', 'Your email address')} *<br/>
+                        {__('Generic', 'Your email address')}{if !$smtp_optional} *{/if}<br/>
                         <span class="small">{__('Generic', '(in the format name@mail.com)')}</span>
                     </label>
 
@@ -51,7 +51,7 @@
                         {if $useRemoteUser}
                             <input type="hidden" name="mail" value="{$form->admin_mail}">{$form->admin_mail}
                         {else}
-                            <input id="email" required type="email" name="mail" class="form-control" {$errors['email']['aria']} value="{$poll_mail|html}" />
+                            <input id="email"{if !$smtp_optional} required{/if} type="email" name="mail" class="form-control" {$errors['email']['aria']} value="{$poll_mail|html}" />
                         {/if}
                     </div>
                 </div>
