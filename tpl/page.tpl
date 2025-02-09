@@ -32,10 +32,10 @@
     <script type="text/javascript" src="{'js/core.js'|resource}"></script>
 
     {block name="header"}{/block}
-	<link rel="stylesheet" type="text/css" media="all" href="https://cdn.piraten-tools.de/libs/piratentools/1.0.0/css/bootstrap-diff-de.css" />
-	<link rel="stylesheet" type="text/css" media="all" href="https://cdn.piraten-tools.de/fonts/font-awesome/4.7.0/css/font-awesome.min.css" />
-	<link rel="stylesheet" type="text/css" media="all" href="https://cdn.piraten-tools.de/libs/piratentools/1.0.0/css/piratentools.css" />
-    <link rel="stylesheet" type="text/css" media="all" href="https://cdn.piraten-tools.de/libs/piratentools/1.0.0/css/piratnew.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="https://cdn.piraten.tools/libs/piratentools/1.0.0/css/bootstrap-diff-de.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="https://cdn.piraten.tools/fonts/font-awesome/4.7.0/css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="https://cdn.piraten.tools/libs/piratentools/1.0.0/css/piratentools.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="https://cdn.piraten.tools/libs/piratentools/1.0.0/css/piratnew.css" />
     <link rel="stylesheet" href="{'css/spickerrr.css'|resource}">
 </head>
 <body>
@@ -45,8 +45,8 @@
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
-			<a class="brand logo" href="http://piraten-tools.de/">
-				<img src="https://cdn.piraten-tools.de/libs/piratentools/1.0.0/img/logo.png" />
+			<a class="brand logo" href="https://piraten.tools/">
+				<img src="https://cdn.piraten.tools/libs/piratentools/1.0.0/img/logo.png" />
 			</a>
 			<a class="brand" href="/">Selectorrr</a>
 			{if count($langs)>1}
@@ -82,8 +82,8 @@
 </div> <!-- #content -->
 </div> <!-- .snap-content -->
 
-<script type="text/javascript" src="https://cdn.piraten-tools.de/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://cdn.piraten-tools.de/libs/piratentools/1.0.0/js/toolsmenu.js"></script>
+<script type="text/javascript" src="https://cdn.piraten.tools/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdn.piraten.tools/libs/piratentools/1.0.0/js/toolsmenu.js"></script>
 {if isset($tracking_code)}
     {$tracking_code}
 {/if}
