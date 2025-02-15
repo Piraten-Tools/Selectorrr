@@ -46,7 +46,9 @@
 	<div class="navbar-inner">
 		<div class="container">
 			<a class="brand logo" href="https://piraten.tools/">
-				<img src="https://cdn.piraten.tools/libs/piratentools/1.0.0/img/logo.png" />
+				<img src="https://cdn.piraten.tools/img/Logo_Piraten-Tools.svg">
+				<div>PIRATEN</div>
+				<div>TOOLS</div>
 			</a>
 			<a class="brand" href="/">Selectorrr</a>
 			{if count($langs)>1}
