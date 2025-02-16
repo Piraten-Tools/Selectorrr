@@ -84,7 +84,6 @@
 </div> <!-- #content -->
 </div> <!-- .snap-content -->
 
-<script type="text/javascript" src="https://cdn.piraten.tools/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdn.piraten.tools/libs/piratentools/1.0.0/js/toolsmenu.js"></script>
 {if isset($tracking_code)}
     {$tracking_code}
