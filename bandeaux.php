@@ -30,7 +30,7 @@ function bandeau_titre($titre)
     echo '
     <header role="banner">';
     if(count($ALLOWED_LANGUAGES) > 1){
-        echo '<form method="post" action="" class="hidden-print">
+        echo '<form method="post" class="hidden-print">
             <div class="input-group input-group-sm pull-right col-md-2 col-xs-4">
                 <select name="lang" class="form-control" title="' . __('Language selector', 'Select the language') . '" >' . liste_lang() . '</select>
                 <span class="input-group-btn">
@@ -45,7 +45,7 @@ function bandeau_titre($titre)
         <hr class="trait" role="presentation" />
     </header>
     <main role="main">';
-    
+
     global $connect;
     $tables = $connect->allTables();
     $diff = array_diff([Utils::table('comment'), Utils::table('poll'), Utils::table('slot'), Utils::table('vote')], $tables);
@@ -56,14 +56,14 @@ function bandeau_titre($titre)
     }
 }
 
-function liste_lang()
+function liste_lang(): string
 {
     global $ALLOWED_LANGUAGES; global $locale;
 
     $str = '';
 
     foreach ($ALLOWED_LANGUAGES as $k => $v ) {
-        if (substr($k,0,2)===$locale) {
+        if (strpos($k, $locale) === 0) {
             $str .= '<option lang="' . substr($k,0,2) . '" selected value="' . $k . '">' . $v . '</option>' . "\n" ;
         } else {
             $str .= '<option lang="' . substr($k,0,2) . '" value="' . $k . '">' . $v . '</option>' . "\n" ;

@@ -44,8 +44,8 @@ if ($form === null && !($form instanceof Form)) {
 }
 
 // Type de sondage
-if (isset($_GET['type']) && $_GET['type'] === 'date' ||
-    isset($_POST['type']) && $_POST['type'] === 'date'
+if ((isset($_GET['type']) && $_GET['type'] === 'date') ||
+    (isset($_POST['type']) && $_POST['type'] === 'date')
 ) {
     $poll_type = 'date';
     $form->choix_sondage = $poll_type;
@@ -59,21 +59,21 @@ $goToStep2 = filter_input(INPUT_POST, GO_TO_STEP_2, FILTER_VALIDATE_REGEXP, ['op
 if ($goToStep2) {
     $title = $inputService->filterTitle($_POST['title']);
 
-    $use_ValueMax = isset($_POST['use_ValueMax']) ? $inputService->filterBoolean($_POST['use_ValueMax']) : false;
+    $use_ValueMax = isset($_POST['use_ValueMax']) && $inputService->filterBoolean($_POST['use_ValueMax']);
     $ValueMax = $use_ValueMax === true ? $inputService->filterValueMax($_POST['ValueMax']) : null;
 
-    $use_customized_url = isset($_POST['use_customized_url']) ? $inputService->filterBoolean($_POST['use_customized_url']) : false;
+    $use_customized_url = isset($_POST['use_customized_url']) && $inputService->filterBoolean($_POST['use_customized_url']);
     $customized_url = $use_customized_url === true ? $inputService->filterId($_POST['customized_url']) : null;
-    $name = $inputService->filterName($_POST['name']);
+    $name = mb_substr($inputService->filterName($_POST['name']), 0, 32);
     $mail = $config['use_smtp'] === true ? $inputService->filterMail($_POST['mail']) : null;
     $description = $inputService->filterDescription($_POST['description']);
     $editable = $inputService->filterEditable($_POST['editable']);
-    $receiveNewVotes = isset($_POST['receiveNewVotes']) ? $inputService->filterBoolean($_POST['receiveNewVotes']) : false;
-    $receiveNewComments = isset($_POST['receiveNewComments']) ? $inputService->filterBoolean($_POST['receiveNewComments']) : false;
-    $hidden = isset($_POST['hidden']) ? $inputService->filterBoolean($_POST['hidden']) : false;
+    $receiveNewVotes = isset($_POST['receiveNewVotes']) && $inputService->filterBoolean($_POST['receiveNewVotes']);
+    $receiveNewComments = isset($_POST['receiveNewComments']) && $inputService->filterBoolean($_POST['receiveNewComments']);
+    $hidden = isset($_POST['hidden']) && $inputService->filterBoolean($_POST['hidden']);
     $use_password = filter_input(INPUT_POST, 'use_password', FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => BOOLEAN_REGEX]]);
-    $password = isset($_POST['password']) ? $_POST['password'] : null;
-    $password_repeat = isset($_POST['password_repeat']) ? $_POST['password_repeat'] : null;
+    $password = $_POST['password'] ?? null;
+    $password_repeat = $_POST['password_repeat'] ?? null;
     $results_publicly_visible = filter_input(INPUT_POST, 'results_publicly_visible', FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => BOOLEAN_REGEX]]);
 
     // On initialise également les autres variables
@@ -98,7 +98,6 @@ if ($goToStep2) {
     $form->receiveNewVotes = $receiveNewVotes;
     $form->receiveNewComments = $receiveNewComments;
     $form->hidden = $hidden;
-    $form->collect_users_mail = $collect_users_mail;
     $form->use_password = ($use_password !== null);
     $form->results_publicly_visible = ($results_publicly_visible !== null);
 
@@ -243,7 +242,7 @@ if (!empty($_POST[GO_TO_STEP_2])) {
     if ($error_on_customized_url) {
         $errors['customized_url']['aria'] = 'aria-describeby="customized_url" ';
         $errors['customized_url']['class'] = ' has-error';
-        $errors['customized_url']['msg'] = isset($error_on_customized_url_msg) ? $error_on_customized_url_msg : __('Error', "Something is wrong with the format: customized urls should only consist of alphanumeric characters and hyphens.");
+        $errors['customized_url']['msg'] = $error_on_customized_url_msg ?? __('Error', "Something is wrong with the format: customized urls should only consist of alphanumeric characters and hyphens.");
     }
 
     if ($error_on_description) {
@@ -256,6 +255,10 @@ if (!empty($_POST[GO_TO_STEP_2])) {
         $errors['name']['aria'] = 'aria-describeby="poll_name_error" ';
         $errors['name']['class'] = ' has-error';
         $errors['name']['msg'] = __('Error', 'Enter a name');
+    } elseif (mb_strlen($inputService->filterName($_POST['name'])) > 32) {
+        $errors['name']['aria'] = 'aria-describeby="poll_name_error" ';
+        $errors['name']['class'] = ' has-error';
+        $errors['name']['msg'] = __('Error', "Name is limited to 32 characters");
     } elseif ($error_on_name) {
         $errors['name']['aria'] = 'aria-describeby="poll_name_error" ';
         $errors['name']['class'] = ' has-error';
@@ -306,7 +309,6 @@ $smarty->assign('customized_url', Utils::fromPostOrDefault('customized_url', $fo
 $smarty->assign('use_customized_url', Utils::fromPostOrDefault('use_customized_url', $form->use_customized_url));
 $smarty->assign('ValueMax', Utils::fromPostOrDefault('ValueMax', $form->ValueMax));
 $smarty->assign('use_ValueMax', Utils::fromPostOrDefault('use_ValueMax', $form->use_ValueMax));
-$smarty->assign('collect_users_mail', Utils::fromPostOrDefault('collect_users_mail', $form->collect_users_mail));
 $smarty->assign('poll_description', !empty($_POST['description']) ? $_POST['description'] :  $form->description);
 $smarty->assign('poll_name', Utils::fromPostOrDefault('name', $form->admin_name));
 $smarty->assign('poll_mail', Utils::fromPostOrDefault('mail', $form->admin_mail));

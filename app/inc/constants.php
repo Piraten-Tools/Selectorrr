@@ -20,10 +20,10 @@
  */
 
 // FRAMADATE version
-const VERSION = '1.1.9';
+const VERSION = '1.1.19';
 
 // PHP Needed version
-const PHP_NEEDED_VERSION = '5.6';
+const PHP_NEEDED_VERSION = '7.3';
 
 // Config constants
 const COMPILE_DIR = '/tpl_c/';
@@ -44,3 +44,6 @@ const SESSION_EDIT_LINK_TIME = "EditLinkMail";
 
 // CSRF (300s = 5min)
 const TOKEN_TIME = 300;
+
+const ICAL_ENDING = ".ics";
+const ICAL_PRODID = "-//Framasoft//Framadate//EN";

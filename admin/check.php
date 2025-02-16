@@ -22,7 +22,7 @@
 use Framadate\Message;
 use Framadate\Utils;
 
-define('ROOT_DIR', __DIR__ . '/../');
+const ROOT_DIR = __DIR__ . '/../';
 
 /**
  * Checking for missing vendors.
@@ -48,6 +48,7 @@ $ALLOWED_LANGUAGES = [
     'de' => 'Deutsch',
     'it' => 'Italiano',
     'br' => 'Brezhoneg',
+    'ca' => 'Català',
 ];
 const DEFAULT_LANGUAGE = 'en';
 require_once ROOT_DIR . 'app/inc/i18n.php';
@@ -59,7 +60,7 @@ require_once ROOT_DIR . 'app/inc/i18n.php';
  * @param Message $b
  * @return int
  */
-function compareCheckMessage(Message $a, Message $b)
+function compareCheckMessage(Message $a, Message $b): int
 {
     $values = [
         'danger' => 0,
@@ -91,7 +92,7 @@ $conf_filename = $inc_directory . 'config.php';
 if (version_compare(PHP_VERSION, PHP_NEEDED_VERSION) >= 0) {
     $messages[] = new Message('info', __f('Check','PHP version %s is enough (needed at least PHP %s).', PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION, PHP_NEEDED_VERSION));
 } else {
-    $messages[] = new Message('danger', __f('Check','Your PHP version (%s) is too old. This application needs at least PHP %s.', phpversion(), PHP_NEEDED_VERSION));
+    $messages[] = new Message('danger', __f('Check','Your PHP version (%s) is too old. This application needs at least PHP %s.', PHP_VERSION, PHP_NEEDED_VERSION));
 }
 
 // INTL extension
@@ -99,6 +100,13 @@ if (extension_loaded('intl')) {
     $messages[] = new Message('info', __('Check','PHP Intl extension is enabled.'));
 } else {
     $messages[] = new Message('danger', __('Check','You need to enable the PHP Intl extension.'));
+}
+
+// mbstring extension
+if (extension_loaded('mbstring')) {
+    $messages[] = new Message('info', __('Check','PHP mbstring extension is enabled.'));
+} else {
+    $messages[] = new Message('danger', __('Check','You need to enable the PHP mbstring extension.'));
 }
 
 // Is template compile dir exists and writable ?
@@ -114,7 +122,7 @@ if (!file_exists(ROOT_DIR . COMPILE_DIR)) {
 if (file_exists($conf_filename)) {
     $messages[] = new Message('info', __('Check','The config file exists.'));
 } elseif (is_writable($inc_directory)) {
-    $messages[] = new Message('info', __('Check','The config file directory (%s) is writable.', $inc_directory));
+    $messages[] = new Message('info', __f('Check','The config file directory (%s) is writable.', $inc_directory));
 } else {
     $messages[] = new Message('danger', __f('Check','The config file directory (%s) is not writable and the config file (%s) does not exists.', $inc_directory, $conf_filename));
 }
@@ -177,11 +185,11 @@ usort($messages, 'compareCheckMessage');
 <body>
     <div class="container ombre">
         <div class="row">
-            <form method="get" action="" class="hidden-print">
+            <form method="get" class="hidden-print">
                 <div class="input-group input-group-sm pull-right col-xs-12 col-sm-2">
                     <select name="lang" class="form-control" title="<?=__('Language selector', 'Select the language')?>" >
                         <?php foreach ($ALLOWED_LANGUAGES as $lang_key => $language) { ?>
-                        <option lang="fr" <?php if (substr($lang_key, 0, 2)===$locale) { echo 'selected';} ?> value="<?=substr($lang_key, 0, 2)?>"><?=$language?></option>
+                        <option lang="fr" <?php if (strpos($lang_key, $locale) === 0) { echo 'selected';} ?> value="<?=substr($lang_key, 0, 2)?>"><?=$language?></option>
                         <?php } ?>
                     </select>
                 <span class="input-group-btn">

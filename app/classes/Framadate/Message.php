@@ -28,7 +28,7 @@ class Message {
     var $linkIcon;
     var $includeTemplate;
 
-    function __construct($type, $message, $link=null, $linkTitle=null, $linkIcon=null, $includeTemplate=null) {
+    public function __construct($type, $message, $link=null, $linkTitle=null, $linkIcon=null, $includeTemplate=null) {
         $this->type = $type;
         $this->message = $message;
         $this->link = $link;
@@ -37,4 +37,4 @@ class Message {
         $this->includeTemplate = $includeTemplate;
     }
 }
- 
+

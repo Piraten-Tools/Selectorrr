@@ -21,6 +21,7 @@
 namespace Framadate\Migration;
 
 use Framadate\Utils;
+use PDO;
 
 /**
  * This migration alter the comment table to add a date column.
@@ -29,7 +30,7 @@ use Framadate\Utils;
  * @version 1.0
  */
 class Alter_Comment_table_adding_date implements Migration {
-    function __construct() {
+    public function __construct() {
     }
 
     /**
@@ -37,7 +38,7 @@ class Alter_Comment_table_adding_date implements Migration {
      *
      * @return string The description of the migration class
      */
-    function description() {
+    public function description():string {
         return 'Alter the comment table to add a date column.';
     }
 
@@ -45,26 +46,27 @@ class Alter_Comment_table_adding_date implements Migration {
      * This method could check if the execute method should be called.
      * It is called before the execute method.
      *
-     * @param \PDO $pdo The connection to database
+     * @param PDO $pdo The connection to database
      * @return bool true is the Migration should be executed.
      */
-    function preCondition(\PDO $pdo) {
+    public function preCondition(PDO $pdo): bool {
         return true;
     }
 
     /**
      * This methode is called only one time in the migration page.
      *
-     * @param \PDO $pdo The connection to database
+     * @param PDO $pdo The connection to database
      * @return bool true is the execution succeeded
      */
-    function execute(\PDO $pdo) {
+    public function execute(PDO $pdo): bool {
         $this->alterCommentTable($pdo);
 
         return true;
     }
 
-    private function alterCommentTable(\PDO $pdo) {
+    private function alterCommentTable(PDO $pdo): void
+    {
         $pdo->exec('
         ALTER TABLE `' . Utils::table('comment') . '`
         ADD `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ;');

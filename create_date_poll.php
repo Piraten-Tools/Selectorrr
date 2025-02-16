@@ -32,19 +32,15 @@ include_once __DIR__ . '/app/inc/init.php';
 /* Service */
 /*---------*/
 $logService = new LogService();
-$pollService = new PollService($connect, $logService);
+$pollService = new PollService($logService);
 $mailService = new MailService($config['use_smtp'], $config['smtp_options']);
-$purgeService = new PurgeService($connect, $logService);
+$purgeService = new PurgeService($logService);
 $inputService = new InputService();
 $sessionService = new SessionService();
 
 if (is_readable('bandeaux_local.php')) {
     include_once('bandeaux_local.php');
 }
-
-// Min/Max archive date
-$min_expiry_time = $pollService->minExpiryDate();
-$max_expiry_time = $pollService->maxExpiryDate();
 
 $form = unserialize($_SESSION['form']);
 
@@ -58,7 +54,7 @@ if (isset($form->format) && $form->format !== 'D') {
     $form->clearChoices();
 }
 
-if (!isset($form->title) || !isset($form->admin_name) || ($config['use_smtp'] && !isset($form->admin_mail))) {
+if (!isset($form->title, $form->admin_name) || ($config['use_smtp'] && !isset($form->admin_mail))) {
     $step = 1;
 } else if (!empty($_POST['confirmation'])) {
     $step = 4;
@@ -113,7 +109,7 @@ switch ($step) {
         // Handle Step2 submission
         if (!empty($_POST['days'])) {
             // Remove empty dates
-            $_POST['days'] = array_filter($_POST['days'], function ($d) {
+            $_POST['days'] = array_filter($_POST['days'], static function ($d) {
                 return !empty($d);
             });
 
@@ -141,7 +137,7 @@ switch ($step) {
                 $i++;
             }
 
-            for ($i = 0; $i < count($_POST['days']); $i++) {
+            for ($i = 0, $iMax = count($_POST['days']); $i < $iMax; $i++) {
                 $day = $_POST['days'][$i];
 
                 if (!empty($day)) {
@@ -152,7 +148,7 @@ switch ($step) {
                     $form->addChoice($choice);
 
                     $schedules = $inputService->filterArray($moments[$i], FILTER_DEFAULT);
-                    for ($j = 0; $j < count($schedules); $j++) {
+                    for ($j = 0, $jMax = count($schedules); $j < $jMax; $j++) {
                         if (!empty($schedules[$j])) {
                             $choice->addSlot(strip_tags($schedules[$j]));
                         }
@@ -166,7 +162,7 @@ switch ($step) {
         $summary = '<ul>';
         $choices = $form->getChoices();
         foreach ($choices as $choice) {
-            $summary .= '<li>' . strftime($date_format['txt_full'], $choice->getName());
+            $summary .= '<li>' . formatDate($date_format['txt_full'], $choice->getName());
             $first = true;
             foreach ($choice->getSlots() as $slots) {
                 $summary .= $first ? ': ' : ', ';
@@ -177,7 +173,7 @@ switch ($step) {
         }
         $summary .= '</ul>';
 
-        $end_date_str = utf8_encode(strftime($date_format['txt_date'], $max_expiry_time)); // textual date
+        $end_date_str = utf8_encode(formatDate($date_format['txt_date'], $pollService->maxExpiryDate()->getTimestamp())); // textual date
 
         $_SESSION['form'] = serialize($form);
 
@@ -194,28 +190,8 @@ switch ($step) {
         // Step 4 : Data prepare before insert in DB
 
         // Define expiration date
-        $enddate = filter_input(INPUT_POST, 'enddate', FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => '#^[0-9]{2}/[0-9]{2}/[0-9]{4}$#']]);
-
-        if (!empty($enddate)) {
-            $registredate = explode('/', $enddate);
-
-            if (is_array($registredate) && count($registredate) === 3) {
-                $time = mktime(0, 0, 0, $registredate[1], $registredate[0], $registredate[2]);
-
-                if ($time < $min_expiry_time) {
-                    $form->end_date = $min_expiry_time;
-                } elseif ($max_expiry_time < $time) {
-                    $form->end_date = $max_expiry_time;
-                } else {
-                    $form->end_date = $time;
-                }
-            }
-        }
-
-        if (empty($form->end_date)) {
-            // By default, expiration date is 6 months after last day
-            $form->end_date = $max_expiry_time;
-        }
+        $expiration_date = $inputService->parseDate($_POST['enddate']);
+        $form->end_date = $inputService->validateDate($expiration_date, $pollService->minExpiryDate(), $pollService->maxExpiryDate())->getTimestamp();
 
         // Insert poll in database
         $ids = $pollService->createPoll($form);
@@ -236,8 +212,8 @@ switch ($step) {
             $message_admin = sprintf($message_admin, Utils::getUrlSondage($admin_poll_id, true));
 
             if ($mailService->isValidEmail($form->admin_mail)) {
-                $mailService->send($form->admin_mail, '[' . NOMAPPLICATION . '][' . __('Mail', 'Message for the author') . '] ' . __('Generic', 'Poll') . ': ' . $form->title, $message_admin);
-                $mailService->send($form->admin_mail, '[' . NOMAPPLICATION . '][' . __('Mail', 'Participant link') . '] ' . __('Generic', 'Poll') . ': ' . $form->title, $message);
+                $mailService->send($form->admin_mail, '[' . NOMAPPLICATION . '][' . __('Mail', 'Author\'s message') . '] ' . __('Generic', 'Poll') . ': ' . Utils::htmlEscape($form->title), $message_admin);
+                $mailService->send($form->admin_mail, '[' . NOMAPPLICATION . '][' . __('Mail', 'For sending to the polled users') . '] ' . __('Generic', 'Poll') . ': ' . Utils::htmlEscape($form->title), $message);
             }
         }
 

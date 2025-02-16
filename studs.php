@@ -24,6 +24,7 @@ use Framadate\Exception\ConcurrentEditionException;
 use Framadate\Exception\ConcurrentVoteException;
 use Framadate\Message;
 use Framadate\Security\Token;
+use Framadate\Services\ICalService;
 use Framadate\Services\InputService;
 use Framadate\Services\LogService;
 use Framadate\Services\MailService;
@@ -58,12 +59,13 @@ $selectedNewVotes = [];
 /*----------*/
 
 $logService = new LogService();
-$pollService = new PollService($connect, $logService);
+$pollService = new PollService($logService);
 $inputService = new InputService();
 $mailService = new MailService($config['use_smtp'], $config['smtp_options']);
 $notificationService = new NotificationService($mailService);
 $securityService = new SecurityService();
 $sessionService = new SessionService();
+$icalService = new ICalService();
 
 /* PAGE */
 /* ---- */
@@ -87,7 +89,7 @@ $editedVoteUniqueId = $sessionService->get(USER_REMEMBER_VOTES_KEY, $poll_id, ''
 
 if (!is_null($poll->password_hash)) {
     // If we came from password submission
-    $password = isset($_POST['password']) ? $_POST['password'] : null;
+    $password = $_POST['password'] ?? null;
     if (!empty($password)) {
         $securityService->submitPollAccess($poll, $password);
     }
@@ -173,7 +175,7 @@ if ($accessGranted) {
             try {
                 $result = $pollService->addVote($poll_id, $name, $choices, $slots_hash);
                 if ($result) {
-                    if (intval($poll->editable) === Editable::EDITABLE_BY_OWN) {
+                    if ((int)$poll->editable === Editable::EDITABLE_BY_OWN) {
                         $editedVoteUniqueId = $result->uniqId;
                         $message = getMessageForOwnVoteEditableVote($sessionService, $smarty, $editedVoteUniqueId, $config['use_smtp'], $poll_id, $name);
                     } else {
@@ -196,7 +198,8 @@ if ($accessGranted) {
 }
 
 // Functions
-function getMessageForOwnVoteEditableVote(SessionService &$sessionService, Smarty &$smarty, $editedVoteUniqueId, $canUseSMTP, $poll_id, $name) {
+function getMessageForOwnVoteEditableVote(SessionService &$sessionService, Smarty &$smarty, $editedVoteUniqueId, $canUseSMTP, $poll_id, $name): Message
+{
     $sessionService->set(USER_REMEMBER_VOTES_KEY, $poll_id, $editedVoteUniqueId);
     $urlEditVote = Utils::getUrlSondage($poll_id, false, $editedVoteUniqueId);
     $message = new Message(
@@ -215,6 +218,20 @@ function getMessageForOwnVoteEditableVote(SessionService &$sessionService, Smart
         $smarty->clearAssign('token');
     }
     return $message;
+}
+
+// -------------------------------
+// Get iCal file
+// -------------------------------
+if (isset($_GET['get_ical_file'])) {
+    $dayAndTime = (string)filter_input(INPUT_GET, 'get_ical_file');
+    $dayAndTime = Utils::base64url_decode($dayAndTime);
+    $elements = explode("|", $dayAndTime);
+    if(count($elements) > 1) {
+        $icalService->getEvent($poll, (string)$elements[0], (string)$elements[1]);
+    }
+    header('HTTP/1.1 500 Internal Server Error');
+    echo 'Internal error';
 }
 
 // Retrieve data
@@ -245,4 +262,5 @@ $smarty->assign('editedVoteUniqueId', $editedVoteUniqueId);
 $smarty->assign('ValueMax', $poll->ValueMax);
 $smarty->assign('selectedNewVotes', $selectedNewVotes);
 
+header("X-Robots-Tag: noindex, nofollow, nosnippet, noarchive");
 $smarty->display('studs.tpl');

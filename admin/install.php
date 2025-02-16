@@ -31,6 +31,7 @@ if (is_file(CONF_FILENAME)) {
 
 $error = null;
 $installService = new InstallService();
+$result['details'] = null;
 
 if (!empty($_POST)) {
     $installService->updateFields($_POST);

@@ -1,9 +1,7 @@
-image: framasoft/framadate-ci
+image: framasoft/framadate-ci:7.3-pdo_mysql
 stages:
   - test
   - deploy
-  - beta
-  - funky
 
 # Run php-cs-fixer and phpunit on all branches
 test:
@@ -12,23 +10,17 @@ test:
     - composer install -o  --no-interaction --no-progress --prefer-dist
     - php vendor/bin/php-cs-fixer fix --verbose --dry-run
     - vendor/bin/phpunit --bootstrap app/tests/bootstrap.php --debug app/tests
+  image: framasoft/framadate-ci:${PHP_VERSION}-pdo_mysql
+  parallel:
+      matrix:
+          - PHP_VERSION:
+                - "7.3"
+                - "7.4"
+                - "8.0"
+                - "8.1"
   cache:
     paths:
       - vendor/
-
-check-trad:
-  stage: test
-  allow_failure: true
-  script:
-    - if [ -z ${ZANATA_CONFIG_FRAMABOT+x} ]; then echo "*** Unable to check if translations need to be pulled, exiting ***"; exit 1; fi
-    - export ORIG=$(git diff-files --shortstat)
-    - if [ ! -z ${ZANATA_CONFIG_FRAMABOT+x} ]; then mkdir -p ${HOME}/.config; echo -e "${ZANATA_CONFIG_FRAMABOT}" > ${HOME}/.config/zanata.ini; fi
-    - if [ ! -z ${ZANATA_CONFIG_FRAMABOT+x} ]; then make push-locales; fi
-    - git status > /dev/null 2>&1
-    - export CHANGES=$(git diff-files --shortstat)
-    - if [[ $CHANGES != $ORIG ]]; then echo "*** There is changes in locales ***"; echo "*** You need to do `make pull-locales` in your repo ***"; exit 1; fi
-  only:
-    - develop
 
 # Create artifacts on master
 pages:
@@ -40,23 +32,27 @@ pages:
   - composer dump-autoload --optimize --no-dev --classmap-authoritative
   - mkdir framadate
   - mv `ls -A | grep -v framadate` ./framadate
+  - echo $latesttag > framadate/VERSION
   - find framadate/ -type d -exec chmod 750 {} \;
   - find framadate/ -type f -exec chmod 640 {} \;
   - rm -rf framadate/.git
-  - zip -r latest.zip framadate
+  - export RELEASE_ZIP="framadate-${CI_COMMIT_TAG}.zip"
+  - zip -r $RELEASE_ZIP framadate
   - mkdir .public
-  - cp latest.zip .public
+  - cp $RELEASE_ZIP .public/latest.zip
   - mv .public public
   - if [[ -z $GITLAB_API_TOKEN ]]; then exit; fi
   - export PROJECT_API_URL="https://framagit.org/api/v4/projects/${CI_PROJECT_ID}"
   - export DESCRIPTION_URL="${PROJECT_API_URL}/repository/tags/${CI_COMMIT_TAG}"
   - export RELEASE_URL="${DESCRIPTION_URL}/release"
   - 'export HEADER="Private-Token: ${GITLAB_API_TOKEN}"'
-  - export artifactUrl=$(curl --request POST --header "${HEADER}" --form "file=@public/latest.zip" "${PROJECT_API_URL}/uploads" | jq .url)
+  - export artifactUrl=$(curl -s --request POST --header "${HEADER}" --form "file=@${RELEASE_ZIP}" "${PROJECT_API_URL}/uploads" | jq .url)
+  - export artifactAbsoluteUrl="${CI_PROJECT_URL}${artifactUrl}"
   - export description=$(curl -s --header "${HEADER}" "${DESCRIPTION_URL}" | jq .release.description | sed -e 's@"@@g')
-  - if [[ $description == 'null' ]]; then export METHOD="POST"; echo -e 'You can download the release zip here:'" [latest.zip](${artifactUrl})" > /tmp/text; fi
-  - if [[ $description != 'null' ]]; then export METHOD="PUT";  echo -e "${description}\n\n"'You can download the release zip here:'" [latest.zip](${artifactUrl})" > /tmp/text; fi
+  - if [[ $description == 'null' ]]; then export METHOD="POST"; echo -e 'You can download the release zip here:'" [${RELEASE_ZIP}](${artifactAbsoluteUrl})" > /tmp/text; fi
+  - if [[ $description != 'null' ]]; then export METHOD="PUT";  echo -e "${description}\n\n"'You can download the release zip here:'" [${RELEASE_ZIP}](${artifactAbsoluteUrl})" > /tmp/text; fi
   - curl -s --request $METHOD --data-urlencode "description@/tmp/text" --header "${HEADER}" "${RELEASE_URL}"
+  - curl -s --request POST --header "${HEADER}" --data name="${RELEASE_ZIP}" --data url="${artifactAbsoluteUrl}" "${PROJECT_API_URL}/releases/${CI_COMMIT_TAG}/assets/links"
   artifacts:
     paths:
     - public
@@ -64,54 +60,3 @@ pages:
     - tags
   except:
     - (beta|alpha)
-
-# Deploy on develop
-beta:
-  stage: beta
-  script:
-  - git checkout develop
-  - composer install -o  --no-interaction --no-progress --prefer-dist --no-dev
-  - composer dump-autoload --optimize --no-dev --classmap-authoritative
-  - if [ ! -z ${ZANATA_CONFIG_FRAMABOT+x} ]; then mkdir -p ${HOME}/.config; echo -e "${ZANATA_CONFIG_FRAMABOT}" > ${HOME}/.config/zanata.ini; fi
-  - if [ ! -z ${ZANATA_CONFIG_FRAMABOT+x} ]; then make pull-locales; fi
-  - mkdir .public
-  - cp -r * .public
-  - cp -r .git .public
-  - mv .public public
-  - mkdir "${HOME}/.ssh"
-  - chmod 700 "${HOME}/.ssh"
-  - if [ ! -z ${DEPLOYEMENT_KNOWN_HOSTS+x} ]; then echo -e "${DEPLOYEMENT_KNOWN_HOSTS}" > ${HOME}/.ssh/known_hosts; fi
-  - eval `ssh-agent -s`
-  - if [ ! -z ${BETA_KEY+x} ]; then ssh-add <(echo "${BETA_KEY}" | base64 --decode -i); fi
-  - if [ ! -z ${BETA_KEY+x} ]; then rsync -a --delete --exclude admin/.stdout.log --exclude admin/.htpasswd --exclude app/inc/config.php --exclude stats/ --exclude error/ public/ ${BETA_USER}@${DEPLOYEMENT_HOST}:../../web/; fi
-  only:
-    - develop
-
-# Deploy on funky
-funky:
-  stage: funky
-  script:
-  - git checkout funky
-  - composer install
-  - mkdir tpl_c
-  - mkdir .public
-  - cp -r * .public
-  - mv .public public
-  - mkdir "${HOME}/.ssh"
-  - chmod 700 "${HOME}/.ssh"
-  - if [ ! -z ${DEPLOYEMENT_KNOWN_HOSTS+x} ]; then echo -e "${DEPLOYEMENT_KNOWN_HOSTS}" > ${HOME}/.ssh/known_hosts; fi
-  - eval `ssh-agent -s`
-  - if [ ! -z ${DEPLOYEMENT_KEY+x} ]; then ssh-add <(echo "${DEPLOYEMENT_KEY}" | base64 --decode -i); fi
-  - if [ ! -z ${DEPLOYEMENT_KEY+x} ]; then rsync -a --delete --exclude admin/.stdout.log --exclude admin/.htpasswd --exclude app/inc/config.php --exclude stats/ --exclude error/ public/ ${DEPLOYEMENT_USER}@${DEPLOYEMENT_HOST}:../../web/; fi
-  only:
-    - funky
-
-# Push new translations strings to https://trad.framasoft.org
-trads:
-  stage: deploy
-  image: framasoft/push-trad:latest
-  script:
-  - if [ ! -z ${ZANATA_CONFIG_FRAMABOT+x} ]; then mkdir -p ${HOME}/.config; echo -e "${ZANATA_CONFIG_FRAMABOT}" > ${HOME}/.config/zanata.ini; fi
-  - if [ ! -z ${ZANATA_CONFIG_FRAMABOT+x} ]; then make push-locales; fi
-  only:
-    - develop

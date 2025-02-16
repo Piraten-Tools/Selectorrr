@@ -4,26 +4,28 @@
 
 ![Français](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/20px-Flag_of_France.svg.png) Selectorrr est un service en ligne permettant de planifier un rendez-vous ou prendre des décisions rapidement et simplement. Aucune inscription préalable n’est nécessaire.
 
+**Framadate is now in maintenance mode.** [Read more](https://framagit.org/framasoft/framadate/framadate/-/issues/545#note_920869)
+
 ---
 # Installation
 
-Follow the instructions on Framadate Wiki : <https://framagit.org/framasoft/framadate/wikis/home>
+Follow the instructions on Framadate Wiki : <https://framagit.org/framasoft/framadate/framadate/-/wikis/home>
 
 # Contribute
 
 ## Code 
-Follow the instructions on <https://framagit.org/framasoft/framadate/wikis/coding>
+Follow the instructions on <https://framagit.org/framasoft/framadate/framadate/-/wikis/coding>
 
 # Traductions
 
-Follow the instructions on <https://framagit.org/framasoft/framadate/wikis/translating>
+Follow the instructions on <https://framagit.org/framasoft/framadate/framadate/-/wikis/translating>
 
 # Used libraries
 
-* PHP [PHP 5.6](http://php.net)
+* PHP [PHP 7.3](http://php.net)
 * Templating [Smarty](http://www.smarty.net/),
-* I18N [o80-i18n](https://github.com/olivierperez/o80-i18n)
-* Database: PostgreSQL ou [MySQL 5.5](https://dev.mysql.com/downloads/mysql/5.5.html)
+* I18N [o80-i18n](https://framagit.org/framasoft/framadate/o80-i18nn)
+* Database: MySQL or MariaDB.
 
 ---
 

@@ -4,17 +4,17 @@
  * is not distributed with this file, you can obtain one at
  * http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
  *
- * Authors of STUdS (initial project): Guilhem BORGHESI (borghesi@unistra.fr) and Raphaël DROZ
+ * Authors of STUdS (initial project): Guilhem BORGHESI (borghesi@unistra.fr) and Raphael DROZ
  * Authors of Framadate/OpenSondage: Framasoft (https://github.com/framasoft)
  * Authors of Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  *
  * =============================
  *
- * Ce logiciel est régi par la licence CeCILL-B. Si une copie de cette licence
+ * Ce logiciel est rÃ©gi par la licence CeCILL-B. Si une copie de cette licence
  * ne se trouve pas avec ce fichier vous pouvez l'obtenir sur
  * http://www.cecill.info/licences/Licence_CeCILL-B_V1-fr.txt
  *
- * Auteurs de STUdS (projet initial) : Guilhem BORGHESI (borghesi@unistra.fr) et Raphaël DROZ
+ * Auteurs de STUdS (projet initial) : Guilhem BORGHESI (borghesi@unistra.fr) et Raphael DROZ
  * Auteurs de Framadate/OpenSondage : Framasoft (https://github.com/framasoft)
  * Auteurs de Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  */
@@ -30,11 +30,11 @@ use Framadate\Utils;
  * @version 0.9
  */
 class RPadVotes_from_0_8 implements Migration {
-    function description() {
+    public function description(): string {
         return 'RPad votes from version 0.8.';
     }
 
-    function preCondition(\PDO $pdo) {
+    public function preCondition(\PDO $pdo): bool {
         $stmt = $pdo->query('SHOW TABLES');
         $tables = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
@@ -43,7 +43,7 @@ class RPadVotes_from_0_8 implements Migration {
         return count($diff) === 0;
     }
 
-    function execute(\PDO $pdo) {
+    public function execute(\PDO $pdo): bool {
         $pdo->beginTransaction();
         $this->rpadVotes($pdo);
         $pdo->commit();
@@ -51,7 +51,8 @@ class RPadVotes_from_0_8 implements Migration {
         return true;
     }
 
-    private function rpadVotes($pdo) {
+    private function rpadVotes(\PDO $pdo): void
+    {
         $pdo->exec('UPDATE ' . Utils::table('vote') . ' fv
 INNER JOIN (
 	SELECT v.id, RPAD(v.choices, inn.slots_count, \'0\') new_choices

@@ -146,7 +146,7 @@
                                 <i class="glyphicon glyphicon-pencil"></i><span class="sr-only">{__('Generic', 'Edit')}</span>
                             </a>
                             {if $admin}
-                                <a href="{poll_url id=$poll->id vote_id=$vote->uniqId}" class="btn btn-default btn-sm clipboard-url" data-toggle="popover" data-trigger="manual" title="{__('Poll results', 'Link to edit this particular line')}" data-content="{__('Poll results', 'Link to edit this particular line has been copied!')}">
+                                <a href="{poll_url id=$poll->id vote_id=$vote->uniqId}" class="btn btn-default btn-sm clipboard-url" data-toggle="popover" data-trigger="manual" title="{__('Poll results', 'Link to edit this particular line')}" data-content="{__('Poll results', 'Link to edit this particular line has been copied inside the clipboard!')}">
                                     <span class="btn-link glyphicon glyphicon-link"></span>
                                 </a>
                                 <a href="{poll_url id=$admin_poll_id admin=true action='delete_vote' action_value=$vote->id}"
@@ -205,7 +205,7 @@
                                     </label>
                                 </li>
                                 <li class="hide">
-                                  <input type="radio" id="n-choice-{$id}" name="choices[{$id}]" value=" " 
+                                  <input type="radio" id="n-choice-{$id}" name="choices[{$id}]" value=" "
                                 		{(isset($selectedNewVotes[$id]) && ("" !== $selectedNewVotes[$id])) ? "" : " checked"}
                                 	/>
                                 </li>
@@ -255,7 +255,7 @@
             </p>
         </div>
     </div>
-    <script type="text/javascript">
+    <script>
         $(document).ready(function () {
             $('#showChart').on('click', function() {
                 $('#showChart')
@@ -282,7 +282,7 @@
                 });
                 var cols = [
                 {foreach $slots as $id=>$slot}
-                    $('<div/>').html('{$slot->title|markdown:true}').text(),
+                    "{$slot->title|markdown:true|addslashes}",
                 {/foreach}
                 ];
 

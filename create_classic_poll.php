@@ -19,6 +19,7 @@
  * Auteurs de Selectorrr: Piraten.Tools (https://github.com/Piraten-Tools)
  */
 use Framadate\Choice;
+use Framadate\Services\InputService;
 use Framadate\Services\LogService;
 use Framadate\Services\MailService;
 use Framadate\Services\PollService;
@@ -31,10 +32,11 @@ include_once __DIR__ . '/app/inc/init.php';
 /* Service */
 /*---------*/
 $logService = new LogService();
-$pollService = new PollService($connect, $logService);
+$pollService = new PollService($logService);
 $mailService = new MailService($config['use_smtp'], $config['smtp_options']);
-$purgeService = new PurgeService($connect, $logService);
+$purgeService = new PurgeService($logService);
 $sessionService = new SessionService();
+$inputService = new InputService();
 
 if (is_file('bandeaux_local.php')) {
     include_once('bandeaux_local.php');
@@ -51,10 +53,6 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
     $smarty->display('error.tpl');
     exit;
 }
-    // Min/Max archive date
-    $min_expiry_time = $pollService->minExpiryDate();
-    $max_expiry_time = $pollService->maxExpiryDate();
-
     // The poll format is other (A) if we are in this file
     if (!isset($form->format)) {
         $form->format = 'A';
@@ -68,28 +66,8 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
     // Step 4 : Data prepare before insert in DB
     if (isset($_POST['confirmation'])) {
         // Define expiration date
-        $enddate = filter_input(INPUT_POST, 'enddate', FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => '#^[0-9]{2}/[0-9]{2}/[0-9]{4}$#']]);
-
-        if (!empty($enddate)) {
-            $registredate = explode('/', $enddate);
-
-            if (is_array($registredate) && count($registredate) === 3) {
-                $time = mktime(0, 0, 0, $registredate[1], $registredate[0], $registredate[2]);
-
-                if ($time < $min_expiry_time) {
-                    $form->end_date = $min_expiry_time;
-                } elseif ($max_expiry_time < $time) {
-                    $form->end_date = $max_expiry_time;
-                } else {
-                    $form->end_date = $time;
-                }
-            }
-        }
-
-        if (empty($form->end_date)) {
-            // By default, expiration date is 6 months after last day
-            $form->end_date = $max_expiry_time;
-        }
+        $expiration_date = $inputService->parseDate($_POST['enddate']);
+        $form->end_date = $inputService->validateDate($expiration_date, $pollService->minExpiryDate(), $pollService->maxExpiryDate())->getTimestamp();
 
         // Insert poll in database
         $ids = $pollService->createPoll($form);
@@ -107,8 +85,8 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
             $message_admin .= sprintf(' :<br/><br/><a href="%1$s">%1$s</a>', Utils::getUrlSondage($admin_poll_id, true));
 
             if ($mailService->isValidEmail($form->admin_mail)) {
-                $mailService->send($form->admin_mail, '[' . NOMAPPLICATION . '][' . __('Mail', 'Author\'s message') . '] ' . __('Generic', 'Poll') . ': ' . $form->title, $message_admin);
-                $mailService->send($form->admin_mail, '[' . NOMAPPLICATION . '][' . __('Mail', 'For sending to the polled users') . '] ' . __('Generic', 'Poll') . ': ' . $form->title, $message);
+                $mailService->send($form->admin_mail, '[' . NOMAPPLICATION . '][' . __('Mail', 'Author\'s message') . '] ' . __('Generic', 'Poll') . ': ' . Utils::htmlEscape($form->title), $message_admin);
+                $mailService->send($form->admin_mail, '[' . NOMAPPLICATION . '][' . __('Mail', 'For sending to the polled users') . '] ' . __('Generic', 'Poll') . ': ' . Utils::htmlEscape($form->title), $message);
             }
         }
 
@@ -139,7 +117,7 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
         }
 
         // Expiration date is initialised with config parameter. Value will be modified in step 4 if user has defined an other date
-        $form->end_date = $max_expiry_time;
+        $form->end_date = $pollService->maxExpiryDate()->format('Y-m-d H:i:s');
 
         // Summary
         $summary = '<ol>';
@@ -147,7 +125,7 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
             preg_match_all('/\[!\[(.*?)\]\((.*?)\)\]\((.*?)\)/', $choice->getName(), $md_a_img); // Markdown [![alt](src)](href)
             preg_match_all('/!\[(.*?)\]\((.*?)\)/', $choice->getName(), $md_img); // Markdown ![alt](src)
             preg_match_all('/\[(.*?)\]\((.*?)\)/', $choice->getName(), $md_a); // Markdown [text](href)
-            if (isset($md_a_img[2][0]) && $md_a_img[2][0] !== '' && isset($md_a_img[3][0]) && $md_a_img[3][0] !== '') { // [![alt](src)](href)
+            if (isset($md_a_img[2][0], $md_a_img[3][0]) && $md_a_img[2][0] !== '' && $md_a_img[3][0] !== '') { // [![alt](src)](href)
                 $li_subject_text = (isset($md_a_img[1][0]) && $md_a_img[1][0] !== '') ? stripslashes($md_a_img[1][0]) : __('Generic', 'Choice') . ' ' . ($i + 1);
                 $li_subject_html = '<a href="' . $md_a_img[3][0] . '"><img src="' . $md_a_img[2][0] . '" class="img-responsive" alt="' . $li_subject_text . '" /></a>';
             } elseif (isset($md_img[2][0]) && $md_img[2][0] !== '') { // ![alt](src)
@@ -165,7 +143,7 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
         }
         $summary .= '</ol>';
 
-        $end_date_str = utf8_encode(strftime($date_format['txt_date'], $max_expiry_time)); //textual date
+        $end_date_str = utf8_encode(formatDate($date_format['txt_date'], $pollService->maxExpiryDate()->getTimestamp())); //textual date
 
         $_SESSION['form'] = serialize($form);
 
@@ -183,7 +161,7 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
         bandeau_titre(__('Step 2 classic', 'Poll subjects (2 on 3)'));
 
         echo '
-    <form name="formulaire" action="' . Utils::get_server_name() . 'create_classic_poll.php" method="POST" class="form-horizontal" role="form">
+    <form name="formulaire" action="' . Utils::get_server_name() . 'create_classic_poll.php" method="POST" class="form-horizontal">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">';
         echo '
@@ -199,7 +177,7 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
         $choices = $form->getChoices();
         $nb_choices = max(count($choices), 5);
         for ($i = 0; $i < $nb_choices; $i++) {
-            $choice = isset($choices[$i]) ? $choices[$i] : new Choice();
+            $choice = $choices[$i] ?? new Choice();
             echo '
             <div class="form-group choice-field">
                 <label for="choice' . $i . '" class="col-sm-2 control-label">' . __('Generic', 'Choice') . ' ' . ($i + 1) . '</label>
@@ -257,8 +235,8 @@ if (empty($form->title) || empty($form->admin_name) || (($config['use_smtp']&&!$
     </div>
     </form>
 
-    <script type="text/javascript" src="js/app/framadatepicker.js"></script>
-    <script type="text/javascript" src="js/app/classic_poll.js"></script>
+    <script src="js/app/framadatepicker.js"></script>
+    <script src="js/app/classic_poll.js"></script>
     ' . "\n";
 
         bandeau_pied();

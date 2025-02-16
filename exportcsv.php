@@ -37,8 +37,12 @@ $poll = null;
 /*----------*/
 
 $logService = new LogService();
-$pollService = new PollService($connect, $logService);
+$pollService = new PollService($logService);
 $securityService = new SecurityService();
+
+/* Globals */
+global $smarty;
+global $date_format;
 
 /* PAGE */
 /* ---- */
@@ -79,7 +83,7 @@ if ($poll->format === 'D') {
     $titles_line = ',';
     $moments_line = ',';
     foreach ($slots as $slot) {
-        $title = Utils::csvEscape(strftime($date_format['txt_date'], $slot->title));
+        $title = Utils::csvEscape(formatDate($date_format['txt_date'], $slot->title));
         $moments = explode(',', $slot->moments);
 
         $titles_line .= str_repeat($title . ',', count($moments));
@@ -90,7 +94,7 @@ if ($poll->format === 'D') {
 } else {
     echo ',';
     foreach ($slots as $slot) {
-        echo Utils::markdown($slot->title, true) . ',';
+        echo Utils::csvEscape(Utils::markdown($slot->title, true)) . ',';
     }
     echo "\r\n";
 }
@@ -112,7 +116,7 @@ foreach ($votes as $vote) {
                 $text = __('Generic', 'Yes');
                 break;
             default:
-                $text = 'unkown';
+                $text = __('Generic', 'Unknown');
         }
         echo Utils::csvEscape($text);
         echo ',';

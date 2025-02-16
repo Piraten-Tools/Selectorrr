@@ -45,11 +45,17 @@ $poll = null;
 $message = null;
 $editingVoteId = 0;
 
+/* Globals */
+/* ------- */
+global $smarty;
+global $connect;
+global $config;
+
 /* Services */
 /*----------*/
 
 $logService = new LogService();
-$pollService = new PollService($connect, $logService);
+$pollService = new PollService($logService);
 $adminPollService = new AdminPollService($connect, $pollService, $logService);
 $inputService = new InputService();
 $mailService = new MailService($config['use_smtp'], $config['smtp_options']);
@@ -82,7 +88,7 @@ $messagePollCreated = $sessionService->get("Framadate", "messagePollCreated", FA
 
 if ($messagePollCreated) {
 	$sessionService->remove("Framadate", "messagePollCreated");
-	
+
 	$message = new Message('success', __('adminstuds', 'The poll is created.'));
 }
 
@@ -115,7 +121,7 @@ if (isset($_POST['update_poll_info'])) {
             $updated = true;
         }
     } elseif ($field === 'rules') {
-        $rules = strip_tags($_POST['rules']);
+        $rules = (int) strip_tags($_POST['rules']);
         switch ($rules) {
             case 0:
                 $poll->active = false;
@@ -139,38 +145,41 @@ if (isset($_POST['update_poll_info'])) {
                 break;
         }
     } elseif ($field === 'expiration_date') {
-        $expiration_date = $inputService->filterDate($_POST['expiration_date']);
-        if ($expiration_date) {
-            $poll->end_date = $expiration_date;
+        $givenExpirationDate = $inputService->parseDate($_POST['expiration_date']);
+        $expiration_date = $inputService->validateDate($givenExpirationDate, $pollService->minExpiryDate(), $pollService->maxExpiryDate());
+        if ($poll->end_date !== $expiration_date->format('Y-m-d H:i:s')) {
+            $poll->end_date = $expiration_date->format('Y-m-d H:i:s');
             $updated = true;
         }
     } elseif ($field === 'name') {
-        $admin_name = $inputService->filterName($_POST['name']);
+        $admin_name = $_POST['name'];
+        $admin_name = mb_substr($admin_name, 0, 32);
+        $admin_name = $inputService->filterName($admin_name);
         if ($admin_name) {
             $poll->admin_name = $admin_name;
             $updated = true;
         }
     } elseif ($field === 'hidden') {
-        $hidden = isset($_POST['hidden']) ? $inputService->filterBoolean($_POST['hidden']) : false;
+        $hidden = isset($_POST['hidden']) && $inputService->filterBoolean($_POST['hidden']);
         if ($hidden !== $poll->hidden) {
             $poll->hidden = $hidden;
 	    $poll->results_publicly_visible = false;
             $updated = true;
         }
     } elseif ($field === 'removePassword') {
-        $removePassword = isset($_POST['removePassword']) ? $inputService->filterBoolean($_POST['removePassword']) : false;
+        $removePassword = isset($_POST['removePassword']) && $inputService->filterBoolean($_POST['removePassword']);
         if ($removePassword) {
             $poll->results_publicly_visible = false;
             $poll->password_hash = null;
             $updated = true;
         }
     } elseif ($field === 'password') {
-        $password = isset($_POST['password']) ? $_POST['password'] : null;
+        $password = $_POST['password'] ?? null;
 
         /**
          * Did the user choose results to be publicly visible ?
          */
-        $resultsPubliclyVisible = isset($_POST['resultsPubliclyVisible']) ? $inputService->filterBoolean($_POST['resultsPubliclyVisible']) : false;
+        $resultsPubliclyVisible = isset($_POST['resultsPubliclyVisible']) && $inputService->filterBoolean($_POST['resultsPubliclyVisible']);
         /**
          * If there's one, save the password
          */
@@ -467,5 +476,5 @@ $smarty->assign('resultPubliclyVisible', true);
 $smarty->assign('editedVoteUniqueId', '');
 $smarty->assign('default_to_marldown_editor', $config['markdown_editor_by_default']);
 $smarty->assign('selectedNewVotes', $selectedNewVotes);
-
+header("X-Robots-Tag: noindex, nofollow, nosnippet, noarchive");
 $smarty->display('studs.tpl');
