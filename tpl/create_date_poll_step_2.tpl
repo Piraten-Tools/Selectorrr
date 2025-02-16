@@ -127,7 +127,9 @@
             </div>
         </div>
     </form>
+{/block}
 
+{block name=footer}
     <div id="add_days" class="modal fade">
         <div class="modal-dialog modal-md">
             <div class="modal-content">

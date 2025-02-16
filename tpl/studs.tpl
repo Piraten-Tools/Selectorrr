@@ -37,12 +37,6 @@
                 <p>{__('studs', 'The poll is expired, it will be deleted soon.')}</p>
                 <p>{__('studs', 'Deletion date:')} {$deletion_date|date_format:$date_format['txt_short']|html}</p>
             </div>
-        {else}
-            {if $admin}
-                {include 'part/poll_hint_admin.tpl'}
-            {else}
-                {include 'part/poll_hint.tpl' active=$poll->active}
-            {/if}
         {/if}
 
         {if !$accessGranted && $resultPubliclyVisible}
@@ -61,4 +55,15 @@
 
     {/if}
 
+{/block}
+
+{block name=footer}
+	{if !$expired}
+		{if $admin}
+			{include 'part/poll_hint_admin.tpl'}
+		{else}
+			{include 'part/poll_hint.tpl' active=$poll->active}
+		{/if}
+	{/if}
+	{include 'part/markdown_modal.tpl'}
 {/block}

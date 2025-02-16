@@ -348,3 +348,7 @@
         {__('Step 1', 'Cookies are disabled on your browser. Theirs activation is required to create a poll.')}
     </div>
 {/block}
+
+{block name=footer}
+	{include 'part/markdown_modal.tpl'}
+{/block}

@@ -88,5 +88,6 @@
 {if isset($tracking_code)}
     {$tracking_code}
 {/if}
+{block name="footer"}{/block}
 </body>
 </html>
