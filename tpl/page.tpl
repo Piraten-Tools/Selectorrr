@@ -52,7 +52,7 @@
 			</a>
 			<a class="brand" href="/">Selectorrr</a>
 			{if count($langs)>1}
-				<form method="post" action="" class="hidden-print pull-right">
+				<form method="post" class="hidden-print pull-right">
 					<div class="input-group input-group-sm">
 						<select name="lang" class="form-control" title="{__('Language selector', 'Select the language')}" >
 						{foreach $langs as $lang_key=>$lang_value}
