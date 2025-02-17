@@ -46,7 +46,7 @@ $locale = str_replace('_', '-', $i18n->getLoadedLang());
 $date_format['txt_full'] = 'eeee d MMMM y'; //summary in create_date_poll.php and removal date in choix_(date|autre).php
 $date_format['txt_short'] = 'E d MMMM y'; // radio title
 $date_format['txt_day'] = 'E d';
-$date_format['txt_date'] = ''; // Defaults to IntlDateFormatter::SHORT
+$date_format['txt_date'] = 'y-MM-dd';
 $date_format['txt_month_year'] = 'MMMM y';
 $date_format['txt_datetime_short'] = 'dd-MM-y HH:mm';
 
